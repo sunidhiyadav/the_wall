@@ -1,0 +1,110 @@
+	<!doctype html>
+	<html>
+	<head>
+		<title>Wall</title>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	</head>
+	<body>
+		<div class="container">
+		     <hr class="colorgraph">
+			<div class="header">
+				<div class="logout">
+					<form role="form" action="/logout" method="POST">
+						<button type="submit" class="btn btn-info btn-lg">
+							<span class="glyphicon glyphicon-log-out"></span> Log out
+						</button>
+					</form></div>
+					<div class="jumbotron text-center">
+					     <!--img src="{{ url_for('static', filename='img/antara.JPG') }}" class="img-circle" alt="Cinque Terre" width="304" height="236"-->		
+						<h1>Welcome {{session['first_name'] }} {{session['last_name'] }}! </h1>
+					</div>
+				</div>
+                 <hr class="colorgraph">
+				<form role="form" action="/message" method="POST">
+					<div class="form-group">
+						<textarea class="form-control" rows="3" name="message"></textarea>
+					</div>	
+					<button type='submit' class="btn btn-success" >Post A Message</button>
+				</form><br><br>
+				{% if messageList %}
+				{% for message in messageList %}
+
+				{% if (session['user_id'] != message['user_id']) %}
+				<div class="panel-title">
+				    <h3> <!--img src="{{ url_for('static', filename='img/antara.JPG') }}" class="img-thumbnail" alt="Cinque Terre"      width="70" height="70"-->
+				        {{message['first_name']}} posted on{{message['created_at']}}
+				    </h3>
+					<h4> {{message['post']}}</h4>
+				</div>
+				{% endif %}
+
+				{% if (session['user_id'] == message['user_id']) %}
+				<form role="form" action="/message/{{message['id']}}/delete" method="POST">
+					<div class="panel-title">
+					    <h3><!--img src="{{ url_for('static', filename='img/antara.JPG') }}" class="img-thumbnail" 
+					             alt="Cinque Terre"     width="70" height="70"-->
+					        {{message['first_name']}} posted on {{message['created_at']}} 
+					        <button type="submit" class="btn btn-primary" title="Delete">
+							   <span class="glyphicon glyphicon-remove-circle"></span>
+						   </button>
+						</h3> 
+					    
+						<h4>{{message['post']}}</h4>
+					</div>
+				</form>
+				{% endif %}
+
+				{% if commentList %}
+				{% for comment in commentList %}
+				{% if (message['id'] == comment['post_id']) %}
+
+				{% if (session['user_id'] != comment['user_id']) %}
+				<div class="panel-title">
+				    <h4>
+				      <!--img src="{{ url_for('static', filename='img/antara.JPG') }}" class="img-thumbnail" 
+				         alt="Cinque Terre" width="50" height="50"-->
+				          {{comment['first_name']}} commented on {{comment['created_at']}}
+				    </h4>
+					<h5> {{comment['comment']}}</h5>
+				</div>
+				{% endif %}
+				{% if (session['user_id'] == comment['user_id']) %}
+					<form role="form" action="/comment/{{comment['cid']}}/delete" method="POST">
+						<div class="panel-title">
+							<h4>
+							    <!--img src="{{ url_for('static', filename='img/antara.JPG') }}" class="img-thumbnail" 
+				                 alt="Cinque Terre" width="50" height="0"-->
+
+								{{comment['first_name']}} commented on {{comment['created_at']}} 
+								<button type="submit" class="btn btn-primary" title="Delete">
+									<span class="glyphicon glyphicon-remove-circle"></span>
+								</button>
+							</h4>
+							<h5> {{comment['comment']}}</h5>
+						</div>
+					</form>
+				{% endif %}
+
+				{% endif %}
+				{% endfor %}
+				{% endif %}        
+
+				<form role="form" action='/comment' method="POST">
+					<div class="form-group">
+						<textarea class="form-control" rows="2" name="comment"></textarea>
+						<input type="hidden" value="{{message['id']}}" name="message_id">
+					</div>	
+					<button type='submit' class="btn btn-primary" >Post A Comment</button>
+
+				</form><br><br>
+
+
+				{% endfor %}
+				{% endif %}
+				 <hr class="colorgraph">
+
+			</div> 
+
+		</body>
+		</html>
